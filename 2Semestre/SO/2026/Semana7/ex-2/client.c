@@ -13,35 +13,25 @@ int main (int argc, char * argv[]){
         _exit(1);
     }
 
-    int number = atoi(argv[1]);
-    int occurrences;
+    char fifo_name[30];
+    sprintf(fifo_name, "fifo_%d", getpid());
+    mkfifo(fifo_name, 0600);
 
-    const char *fifo_request = "fifo_request";
-    const char *fifo_response = "fifo_response";
+    int fd_server = open("fifo", O_WRONLY);
+    Msg m;
+    m.needle = atoi(argv[1]);
+    m.pid = getpid();
+    m.occurrences = 0;
+    write(fd_server, &m, sizeof(Msg));
 
-    // Abre o FIFO de requisição para escrita
-    int request_fd = open(fifo_request, O_WRONLY);
-    if (request_fd == -1) {
-        perror("Erro ao abrir FIFO_REQUEST");
-        exit(EXIT_FAILURE);
-    }
 
-    // Envia o número ao servidor
-    write(request_fd, &number, sizeof(int));
-    close(request_fd);
 
-    // Abre o FIFO de resposta para leitura
-    int response_fd = open(fifo_response, O_RDONLY);
-    if (response_fd == -1) {
-        perror("Erro ao abrir FIFO_RESPONSE");
-        exit(EXIT_FAILURE);
-    }
+    int fd_client = open(fifo_name, O_RDONLY);
+    read(fd_client, &m, sizeof(Msg));
+    printf("%d appears %d times\n", m.needle, m.occurrences);
 
-    // Lê o número de ocorrências enviado pelo servidor
-    read(response_fd, &occurrences, sizeof(int));
-    close(response_fd);
-
-    printf("O número %d ocorre %d vez(es) no vetor.\n", number, occurrences);
-
+    close(fd_client);
+    close(fd_server);
     return 0;
+
 }

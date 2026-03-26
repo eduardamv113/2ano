@@ -1,7 +1,7 @@
 all: server client
 
-server: server.c
-	gcc -o server server.c
+server: server.c vector.c vector.h
+	gcc -o server server.c vector.c
 
 client: client.c
 	gcc -o client client.c
