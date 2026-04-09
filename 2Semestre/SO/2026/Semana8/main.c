@@ -1,3 +1,16 @@
+/*
+Para o exercício 1, fez-se as seguintes alterações:
+- Redirecionou-se o descritor associado ao standard input para o ficheiro `/etc/passwd` utilizando `open` e `dup2`.
+- Redirecionou-se o standard output para o ficheiro `saida.txt` e o standard error para o ficheiro `erros.txt`.
+- Antes de terminar, imprimiu-se "terminei" no terminal utilizando `fprintf`.
+
+Para o exercício 2, fez-se as seguintes alterações:
+- Criou-se um novo processo utilizando `fork()`.
+- No processo filho, realizaram-se operações de leitura e escrita, lendo do stdin e escrevendo no stdout.
+- No processo pai, utilizou-se `wait()` para aguardar a conclusão do processo filho.
+- Após a conclusão do processo filho, o processo pai imprimiu "terminei" no terminal.
+*/
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
