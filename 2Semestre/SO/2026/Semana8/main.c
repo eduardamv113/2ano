@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 int main () {
     // Open files for redirection
@@ -36,16 +38,27 @@ int main () {
     close(fd_out);
     close(fd_err);
 
-    // Example operation: read from stdin and write to stdout
-    char buffer[256];
-    while (fgets(buffer, sizeof(buffer), stdin)) {
-        printf("%s", buffer);
+    // Create a new process
+    pid_t pid = fork();
+
+    if (pid == -1) {
+        perror("fork");
+        return 1;
     }
 
-    // Restore standard output and print termination message
-    fflush(stdout);
-    fprintf(stderr, "\nErrors logged\n");
-    fprintf(stdout, "terminei\n");
+    if (pid == 0) { // Child process
+        // Example operation: read from stdin and write to stdout
+        char buffer[256];
+        while (fgets(buffer, sizeof(buffer), stdin)) {
+            printf("%s", buffer);
+        }
+        return 0;
+    } else { // Parent process
+        // Wait for the child process to finish
+        wait(NULL);
+        // Restore standard output and print termination message
+        fprintf(stdout, "terminei\n");
+    }
 
     return 0;
 }
